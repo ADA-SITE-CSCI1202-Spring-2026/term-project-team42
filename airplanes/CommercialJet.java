@@ -4,10 +4,12 @@ import java.util.Random;
 
 public class CommercialJet extends Aircraft {
     private int passengerCapacity;
+    private double ticketPrice;
 
     public CommercialJet(String flightNumber, double requiredFuel, int requiredTurnaroundTime, int passengerCapacity) {
         super(flightNumber, requiredFuel, requiredTurnaroundTime);
         this.passengerCapacity = passengerCapacity;
+        this.ticketPrice = 100 + requiredTurnaroundTime*0.2 + requiredFuel*0.3;
     }
 
     public int getPassengerCapacity() {
@@ -15,6 +17,13 @@ public class CommercialJet extends Aircraft {
     }
     public void setPassengerCapacity(int passengerCapacity) {
         this.passengerCapacity = passengerCapacity;
+    }
+
+    public double getTicketPrice() {
+        return ticketPrice;
+    }
+    public void setTicketPrice(int ticketPrice) {
+        this.ticketPrice = ticketPrice;
     }
 
     @Override
@@ -25,5 +34,11 @@ public class CommercialJet extends Aircraft {
         int listIndex = rand.nextInt(modelList.length);
 
         setAircraftModel(modelList[listIndex]);
+    }
+
+    @Override
+    public double calculateRevenue() {
+        double revenue = passengerCapacity * ticketPrice;
+        return revenue;
     }
 }
