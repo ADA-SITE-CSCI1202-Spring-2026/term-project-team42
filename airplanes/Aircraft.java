@@ -44,9 +44,11 @@ public abstract class Aircraft {
         this.requiredTurnaroundTime = requiredTurnaroundTime;
     }
     
+    
     public void setAircraftModel(String aircraftModel) {
         this.aircraftModel = aircraftModel;
     }
 
     public abstract void generateNewAircraft();
+    public abstract double calculateRevenue();
 }

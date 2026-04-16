@@ -26,4 +26,10 @@ public class CargoFreighter extends Aircraft {
 
         setAircraftModel(modelList[listIndex]);
     }
+
+    @Override
+    public double calculateRevenue() {
+        double revenue = cargoCapacity * 1000;
+        return revenue;
+    }
 }

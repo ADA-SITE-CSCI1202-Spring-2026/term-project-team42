@@ -4,10 +4,19 @@ import java.util.Random;
 
 public class PrivateCharter extends Aircraft {
     private int serviceLevel;
+    private int blockHours;
+    private double hourlyRate;
+    private double positioningCost;
+    private double incidentalCost;
 
-    public PrivateCharter(String flightNumber, double requiredFuel, int requiredTurnaroundTime, int serviceLevel) {
+
+    public PrivateCharter(String flightNumber, double requiredFuel, int requiredTurnaroundTime, int serviceLevel, int blockHours, double hourlyRate, double positioningCost, double incidentalCost) {
         super(flightNumber, requiredFuel, requiredTurnaroundTime);
         this.serviceLevel = serviceLevel;
+        this.blockHours = blockHours;
+        this.hourlyRate = hourlyRate;
+        this.positioningCost = positioningCost;
+        this.incidentalCost = incidentalCost;
     }
 
     public int getServiceLevel() {
@@ -15,6 +24,34 @@ public class PrivateCharter extends Aircraft {
     }
     public void setServiceLevel(int serviceLevel) {
         this.serviceLevel = serviceLevel;
+    }
+
+    public int getBlockHours() {
+        return blockHours;
+    }
+    public void setBlockHours(int blockHours) {
+        this.blockHours = blockHours;
+    }
+
+    public double getHourlyRate() {
+        return hourlyRate;
+    }
+    public void setHourlyRate(double hourlyRate) {
+        this.hourlyRate = hourlyRate;
+    }
+
+    public double getPositioningCost() {
+        return positioningCost;
+    }
+    public void setPositioningCost(double positioningCost) {
+        this.positioningCost = positioningCost;
+    }
+
+    public double getIncidentalCost() {
+        return incidentalCost;
+    }
+    public void setIncidentalCost(double incidentalCost) {
+        this.incidentalCost = incidentalCost;
     }
 
     @Override
@@ -25,5 +62,11 @@ public class PrivateCharter extends Aircraft {
         int listIndex = rand.nextInt(modelList.length);
 
         setAircraftModel(modelList[listIndex]);
+    }
+
+    @Override
+    public double calculateRevenue() {
+        double revenue = serviceLevel*500 + blockHours * hourlyRate + positioningCost + incidentalCost;
+        return revenue;
     }
 }
