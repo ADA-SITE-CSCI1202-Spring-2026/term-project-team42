@@ -49,6 +49,11 @@ public abstract class Aircraft {
         this.aircraftModel = aircraftModel;
     }
 
+    @Override
+    public String toString() {
+        return String.format("%s (%s)", getFlightNumber(), getAircraftModel());
+    }
+
     public abstract void generateNewAircraft();
     public abstract double calculateRevenue();
 }

@@ -1,6 +1,6 @@
-package airplanes;
+package logic;
 
-import airplanes.Aircraft;
+import airplanes.*;
 
 public interface IGroundService {
     void serviceFlight(Aircraft aircraft);
