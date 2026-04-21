@@ -5,14 +5,13 @@ import java.awt.*;
 import javax.swing.*;
 
 public class ControlTowerGUI extends JFrame {
-    private double budget = 50000;
-    private int jetFuel = 5000;
-    
     private DefaultListModel<Aircraft> queueModel = new DefaultListModel<>();
-    JList<Aircraft> flightList = new JList<>(queueModel);
+    private JList<Aircraft> flightList = new JList<>(queueModel);
+    
     private JLabel statsLabel = new JLabel();
     private JComboBox<String> supplyDrop = new JComboBox<>(new String[]{"Jet Fuel", "Meals", "Luggage Carts"});
     private JTextArea logArea = new JTextArea();
+    
     private JButton clearBtn = new JButton("Clear Next Flight");
     private JButton buyBtn = new JButton("Purchase Cargo");
 
@@ -25,7 +24,7 @@ public class ControlTowerGUI extends JFrame {
         // --- ZONE 1: HOLDING PATTERN (flightQueue) ---
         JPanel flightQueue = new JPanel(new BorderLayout());
         flightQueue.setBorder(BorderFactory.createTitledBorder("1. Holding Pattern"));
-        flightQueue.add(new JScrollPane(new JList<>(queueModel)), BorderLayout.CENTER);
+        flightQueue.add(new JScrollPane(flightList), BorderLayout.CENTER);
         flightQueue.add(clearBtn, BorderLayout.SOUTH);
 
 /* */
@@ -33,7 +32,7 @@ public class ControlTowerGUI extends JFrame {
         // --- ZONE 2: TERMINAL DEPOT (resourceState) ---
         JPanel resourceState = new JPanel(new BorderLayout());
         resourceState.setBorder(BorderFactory.createTitledBorder("2. Terminal Depot"));
-        updateStats(); 
+        updateStats(0, 0, 0, 0);
         resourceState.add(statsLabel, BorderLayout.NORTH);
 
 /* */        
@@ -55,8 +54,13 @@ public class ControlTowerGUI extends JFrame {
         add(flightQueue); add(resourceState); add(supplyChain); add(systemLog);
     }
 
-    public void updateStats() {
-        statsLabel.setText(String.format("Budget: $%.2f | Fuel: %dL", budget, jetFuel));
+    public void updateStats(double budget, int fuel, int meals, int carts) {
+        String status = String.format(
+            "<html>Budget: <font color='blue'>$%.2f</font><br>" +
+            "Fuel: %dL<br>Meals: %d<br>Carts: %d</html>", 
+            budget, fuel, meals, carts
+        );
+        this.statsLabel.setText(status);
     }
 
     public JButton getClearBtn() { return clearBtn; }

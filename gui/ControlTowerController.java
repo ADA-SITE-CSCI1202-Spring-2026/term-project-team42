@@ -3,22 +3,35 @@ package gui;
 import airplanes.*;
 import java.util.Random;
 import javax.swing.*;
+import logic.*;
+
 
 public class ControlTowerController {
 
     private ControlTowerGUI view;
     private Random rand = new Random();
 
-    private double currentBudget = 50000;
-    private int currentFuel = 5000;
-    private int currentMeals = 400;    
-    private int currentCarts = 15;
+    private DepotManager depotManager = new DepotManager();
+    double budget = depotManager.getBudget();
+    int fuel = depotManager.getSupply(SupplyItem.FUEL);
+    int meals = depotManager.getSupply(SupplyItem.MEALS);
+    int carts = depotManager.getSupply(SupplyItem.CARTS);
 
     public ControlTowerController(ControlTowerGUI view) {
         this.view = view;
         initHandlers();
         initSystem();
         startTimers();
+        updateUI();
+    }
+
+    private void updateUI() {
+        double budget = depotManager.getBudget();
+        int fuel = depotManager.getSupply(SupplyItem.FUEL);
+        int meals = depotManager.getSupply(SupplyItem.MEALS);
+        int carts = depotManager.getSupply(SupplyItem.CARTS);
+
+        view.updateStats(budget, fuel, meals, carts);
     }
 
     private void initHandlers() {
@@ -28,14 +41,13 @@ public class ControlTowerController {
     }
 
     private void startTimers() {
-        // Lambda for the Timer: Spawns a flight every 5 seconds
         Timer arrivalTimer = new Timer(5000, e -> spawnFlight());
         arrivalTimer.start();
         log("System Online. Monitoring...");
     }
 
     private void initSystem() {
-        log("System Online. Monitoring...");
+        log("System Online. This is the Skyways Airport Control Tower!");
     }
 
     private void spawnFlight() {
@@ -56,16 +68,16 @@ public class ControlTowerController {
     }
     private void spawnCargoFreighter() {
         String id = "CARGO-" + (100 + rand.nextInt(900));
-    
-        double fuel = 3000.0 + (rand.nextDouble() * 7000.0);
-        int turnaround = 60 + rand.nextInt(121);
+
+        int turnaround = 1 + rand.nextInt(25);
+        double reqFuel = 3000.0 + turnaround * 355.0;
         int capacity = 50 + rand.nextInt(101);
 
-        Aircraft newPlane = new CargoFreighter(id, fuel, turnaround, capacity);
+        Aircraft newPlane = new CargoFreighter(id, reqFuel, turnaround, capacity);
     
         newPlane.generateNewAircraft();
 
-  //      view.getQueueModel().addElement(newPlane.toString()); 
+        view.getQueueModel().addElement(newPlane); 
     
         log(String.format("INBOUND: %s [%s] - Cargo Capacity: %d tons", 
             newPlane.getFlightNumber(), 
@@ -80,27 +92,28 @@ public class ControlTowerController {
         double rate = 500.0 + (rand.nextDouble() * 2000.0); 
         double position = 200.0 + rand.nextInt(1000);
         double incidental = 50.0 + rand.nextInt(500);
-
-        Aircraft newPlane = new PrivateCharter(id, 800.0, 30, serviceLevel, blockHours, rate, position, incidental);
+        int turnaround = 1 + rand.nextInt(25);
+        double reqFuel = 2500.0 + turnaround * 300.0;
+        Aircraft newPlane = new PrivateCharter(id, reqFuel, turnaround, serviceLevel, blockHours, rate, position, incidental);
     
         newPlane.generateNewAircraft();
 
- //       view.getQueueModel().addElement(newPlane.toString()); 
+        view.getQueueModel().addElement(newPlane); 
     
         log("CHARTER REQUEST: " + newPlane.getFlightNumber() + " (Level " + serviceLevel + ")");
     }
     private void spawnCommercialJet() {
         String id = "SKW-" + (100 + rand.nextInt(900));
     
-        double fuel = 2000.0 + (rand.nextDouble() * 5000.0);
-        int turnaround = 30 + rand.nextInt(61);
+        int turnaround = 1 + rand.nextInt(25);
+        double reqFuel = 2000.0 + turnaround * 255.0;
         int capacity = 100 + rand.nextInt(201);
 
-        Aircraft newPlane = new CommercialJet(id, fuel, turnaround, capacity);
+        Aircraft newPlane = new CommercialJet(id, reqFuel, turnaround, capacity);
     
         newPlane.generateNewAircraft();
 
-    //    view.getQueueModel().addElement(newPlane.toString()); 
+        view.getQueueModel().addElement(newPlane); 
     
         log(String.format("INBOUND: %s [%s] - Passenger Capacity: %d", 
             newPlane.getFlightNumber(), 
@@ -109,64 +122,59 @@ public class ControlTowerController {
     }
 
    private void handleClearFlight() {
-        DefaultListModel<Aircraft> queue = (DefaultListModel<Aircraft>) view.getQueueModel();
+        DefaultListModel<Aircraft> queue = view.getQueueModel();
+        String lackingResource = "";
+        if (queue.isEmpty()) return;
 
-        if (queue.isEmpty()) {
-            log("WARNING: No flights in holding pattern.");
-            return;
+        Aircraft plane = queue.getElementAt(0);
+
+        if (depotManager.clearFlight(plane)) {
+            queue.remove(0);
+            log("SUCCESS: " + plane.getFlightNumber() + " cleared.");
+        } else {
+            if (depotManager.getSupply(SupplyItem.FUEL) < plane.getRequiredFuel()) {lackingResource = "Fuel";}
+        //    else if (depotManager.getSupply(SupplyItem.MEALS) < []) {lackingResource = "Meals";}
+           // else if (depotManager.getSupply(SupplyItem.CARTS) < []) {lackingResource = "Carts";}
+           /* interface TODO */
+            log("FAILED: Not enough " + lackingResource + ".");
         }
-
-        Aircraft plane = queue.remove(0);
-
-        double earned = plane.calculateRevenue();
-        currentBudget += earned;
-
-        log(String.format("SUCCESS: %s [%s] landed. Revenue: +$%.2f", 
-            plane.getFlightNumber(), plane.getAircraftModel(), earned));
-    
- //       view.updateStats(currentBudget, currentFuel); 
+        
+        updateUI();
     }
 
     private void handlePurchase() {
-        String selected = (String) view.getSupplyDrop().getSelectedItem();
-        if (selected == null) return;
+        String selectedItem = (String) view.getSupplyDrop().getSelectedItem();
+        SupplyItem itemToBuy = null;
+        int amount = 0;
+        int cost = 0;
 
-        double cost = 0;
-
-        switch (selected) {
+        switch (selectedItem) {
             case "Jet Fuel":
-                cost = 2000;
-                if (currentBudget >= cost) {
-                    currentFuel += 1000;
-                    currentBudget -= cost;
-                    log("PURCHASE: +1000L Jet Fuel.");
-                }
+                itemToBuy = SupplyItem.FUEL;
+                amount = 5000;
+                cost = 2500;
                 break;
-
             case "Meals":
+                itemToBuy = SupplyItem.MEALS;
+                amount = 100;
                 cost = 500;
-                if (currentBudget >= cost) {
-                    currentMeals += 200;
-                    currentBudget -= cost;
-                    log("PURCHASE: +200 Meals stocked.");
-                }
                 break;
-
             case "Luggage Carts":
-                cost = 1500;
-                if (currentBudget >= cost) {
-                    currentCarts += 5;
-                    currentBudget -= cost;
-                    log("PURCHASE: +5 Luggage Carts deployed.");
-                }
+                itemToBuy = SupplyItem.CARTS;
+                amount = 5;
+                cost = 1200;
                 break;
         }
 
-        if (currentBudget < cost) {
-            log("ERROR: Insufficient funds for " + selected);
+        if (itemToBuy != null) {
+            if (depotManager.getBudget() >= cost) {
+                depotManager.restock(itemToBuy, amount, cost);
+                log("ORDER FILLED: Received " + amount + " of " + selectedItem);
+            } else {
+                log("FINANCE ERROR: Insufficient budget for " + selectedItem);
+            }
         }
-    
-   //     view.updateStats(currentBudget, currentFuel, currentMeals, currentCarts);
+        updateUI();
     }
 
     private void log(String message) {
