@@ -3,5 +3,8 @@ package logic;
 import airplanes.*;
 
 public interface IGroundService {
-    void serviceFlight(Aircraft aircraft);
+    boolean canProcess(FlightRequest flightRequest);
+
+    void serviceFlight(FlightRequest flightRequest);
 }
+
