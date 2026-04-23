@@ -1,5 +1,7 @@
 package airplanes;
 
+import java.awt.Color;
+
 public abstract class Aircraft {
     private String flightNumber;
     private double requiredFuel;
@@ -49,11 +51,10 @@ public abstract class Aircraft {
         this.aircraftModel = aircraftModel;
     }
 
-    @Override
-    public String toString() {
-        return String.format("%s (%s)", getFlightNumber(), getAircraftModel());
-    }
 
-    public abstract void generateNewAircraft();
+    public abstract void generateAircraftModel();
     public abstract double calculateRevenue();
+
+    public abstract String getLogDetails();
+    public abstract Color getThemeColor();
 }

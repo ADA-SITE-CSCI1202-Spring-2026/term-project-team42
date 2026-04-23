@@ -27,7 +27,7 @@ public class CommercialJet extends Aircraft {
     }
 
     @Override
-    public void generateNewAircraft() {
+    public void generateAircraftModel() {
         String[] modelList = {"Boeing 737","Airbus A320","Boeing 787 Dreamliner","Airbus A350","Embraer E190","Bombardier CRJ900"};
 
         Random rand = new Random();
@@ -40,5 +40,14 @@ public class CommercialJet extends Aircraft {
     public double calculateRevenue() {
         double revenue = passengerCapacity * ticketPrice;
         return revenue;
+    }
+
+    @Override
+    public String getLogDetails() {
+        return String.format("INBOUND: %s [%s] - Passenger Capacity: %d", this.getFlightNumber(), this.getAircraftModel(), this.passengerCapacity);
+    }
+    @Override
+    public java.awt.Color getThemeColor() {
+        return new java.awt.Color(70, 130, 180); // steel blue
     }
 }

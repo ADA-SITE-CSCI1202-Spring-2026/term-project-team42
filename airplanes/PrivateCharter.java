@@ -55,7 +55,7 @@ public class PrivateCharter extends Aircraft {
     }
 
     @Override
-    public void generateNewAircraft() {
+    public void generateAircraftModel() {
         String[] modelList = {"Embraer Phenom 300,", "Bombardier Challenger 350", "Gulfstream G650ER", "Embraer Praetor 500", "Cessna Citation XLS+", "Dassault Falcon 2000LXS"};
 
         Random rand = new Random();
@@ -68,5 +68,14 @@ public class PrivateCharter extends Aircraft {
     public double calculateRevenue() {
         double revenue = serviceLevel*500 + blockHours * hourlyRate + positioningCost + incidentalCost;
         return revenue;
+    }
+
+    @Override
+    public String getLogDetails() {
+        return "CHARTER REQUEST: " + this.getFlightNumber() + " (Level " + this.serviceLevel + ")";
+    }
+    @Override
+    public java.awt.Color getThemeColor() {
+        return new java.awt.Color(255, 215, 0); // gold
     }
 }
