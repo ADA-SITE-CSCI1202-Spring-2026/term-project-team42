@@ -33,7 +33,7 @@ public class FlightManager {
                 double position = 200.0 + random.nextInt(1000);
                 double incidental = 50.0 + random.nextInt(500);
                 turnaround = 1 + random.nextInt(25);
-                reqFuel = 2500.0 + turnaround * 300.0;
+                reqFuel = 2000.0 + turnaround * 300.0;
 
                 currentFlight = new PrivateCharter(id, reqFuel, turnaround, serviceLevel, blockHours, rate, position, incidental);
                 currentFlight.generateNewAircraft();
@@ -41,7 +41,7 @@ public class FlightManager {
             default:
                 id = "SKW-" + (100 + random.nextInt(900));
                 turnaround = 1 + random.nextInt(25);
-                reqFuel = 2000.0 + turnaround * 255.0;
+                reqFuel = 2500.0 + turnaround * 255.0;
                 capacity = 100 + random.nextInt(201);
 
                 currentFlight = new CommercialJet(id, reqFuel, turnaround, capacity);
