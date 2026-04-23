@@ -1,7 +1,7 @@
 package logic;
 
-import java.util.HashMap;
 import airplanes.*;
+import java.util.HashMap;
 
 public class DepotManager {
 
@@ -25,19 +25,27 @@ public class DepotManager {
         return budget;
     }
 
-    public boolean canClear(Aircraft aircraft) {
+    public String checkResources(Aircraft aircraft) {
 
         if (getSupply(SupplyItem.FUEL) < aircraft.getRequiredFuel()) {
-            return false;
+            return "FUEL";
         }
 
-        int mealsNeeded = estimateMeals(aircraft);
-
+        int mealsNeeded = aircraft.getRequiredMeals();
         if (getSupply(SupplyItem.MEALS) < mealsNeeded) {
-            return false;
+            return "MEALS";
         }
 
-        return true;
+        int cartsNeeded = aircraft.getRequiredCarts();
+        if (getSupply(SupplyItem.CARTS) < cartsNeeded) {
+            return "CARTS";
+        }
+
+        return "OKAY";
+    }
+
+    public boolean canClear(Aircraft aircraft) {
+        return checkResources(aircraft).equals("OKAY");
     }
 
     public boolean clearFlight(Aircraft aircraft) {
@@ -47,48 +55,27 @@ public class DepotManager {
         }
 
         int fuel = (int) aircraft.getRequiredFuel();
-        int meals = estimateMeals(aircraft);
-        int carts = estimateCarts(aircraft);
+        int meals = aircraft.getRequiredMeals();
+        int carts = aircraft.getRequiredCarts();
 
         supplies.put(SupplyItem.FUEL, getSupply(SupplyItem.FUEL) - fuel);
         supplies.put(SupplyItem.MEALS, getSupply(SupplyItem.MEALS) - meals);
         supplies.put(SupplyItem.CARTS, getSupply(SupplyItem.CARTS) - carts);
 
-        budget += aircraftRevenue(aircraft);
+        budget += aircraft.calculateRevenue();
 
         return true;
     }
 
-    private int estimateMeals(Aircraft aircraft) {
-        if (aircraft instanceof CommercialJet) {
-            return ((CommercialJet) aircraft).getPassengerCapacity() / 2;
-        } else if (aircraft instanceof CargoFreighter) {
-            return 20;
-        }
-        return 10; 
-    }
+    public boolean restock(SupplyItem item, int amount, int cost) {
 
-    private int estimateCarts(Aircraft aircraft) {
-        if (aircraft instanceof CargoFreighter) {
-            return 5;
+        if (budget < cost) {
+            return false;
         }
-        return 2;
-    }
-
-    private int aircraftRevenue(Aircraft aircraft) {
-        if (aircraft instanceof CommercialJet) {
-            return 5000;
-        } else if (aircraft instanceof CargoFreighter) {
-            return 7000;
-        }
-        return 3000;
-    }
-
-    public void restock(SupplyItem item, int amount, int cost) {
-        if (budget < cost) return;
 
         supplies.put(item, getSupply(item) + amount);
         budget -= cost;
-    }
 
+        return true;
+    }
 }

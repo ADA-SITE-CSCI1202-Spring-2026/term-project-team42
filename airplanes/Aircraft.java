@@ -57,4 +57,12 @@ public abstract class Aircraft {
 
     public abstract String getLogDetails();
     public abstract Color getThemeColor();
+
+    public int getRequiredMeals() {
+        return 0;
+    }
+    
+    public int getRequiredCarts() {
+        return 0;
+    }
 }
