@@ -43,6 +43,15 @@ public class CommercialJet extends Aircraft {
     }
 
     @Override
+    public int getRequiredMeals() {
+        return passengerCapacity; 
+    }
+    @Override
+    public int getRequiredCarts() {
+        return (int) Math.ceil(passengerCapacity / 50.0); 
+    }
+
+    @Override
     public String getLogDetails() {
         return String.format("INBOUND: %s [%s] - Passenger Capacity: %d", this.getFlightNumber(), this.getAircraftModel(), this.passengerCapacity);
     }

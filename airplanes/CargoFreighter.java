@@ -33,6 +33,15 @@ public class CargoFreighter extends Aircraft {
         return revenue;
     }
 
+    @Override 
+    public int getRequiredMeals() {
+        return 0;
+    }
+    @Override
+    public int getRequiredCarts() {
+        return 0; 
+    }
+
     @Override
     public String getLogDetails() {
         return String.format("INBOUND: %s [%s] - Cargo Capacity: %d tons", this.getFlightNumber(), this.getAircraftModel(), this.cargoCapacity);

@@ -71,6 +71,15 @@ public class PrivateCharter extends Aircraft {
     }
 
     @Override
+    public int getRequiredMeals() {
+        return serviceLevel * 4;
+    }
+    @Override
+    public int getRequiredCarts() {
+        return serviceLevel * 3;
+    }
+
+    @Override
     public String getLogDetails() {
         return "CHARTER REQUEST: " + this.getFlightNumber() + " (Level " + this.serviceLevel + ")";
     }

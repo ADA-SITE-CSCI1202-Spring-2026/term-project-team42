@@ -55,6 +55,9 @@ public abstract class Aircraft {
     public abstract void generateAircraftModel();
     public abstract double calculateRevenue();
 
+    public abstract int getRequiredMeals();
+    public abstract int getRequiredCarts();
+
     public abstract String getLogDetails();
     public abstract Color getThemeColor();
 }
