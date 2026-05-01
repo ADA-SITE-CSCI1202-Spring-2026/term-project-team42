@@ -3,6 +3,10 @@ package gui;
 import airplanes.*;
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
 import logic.controller.ControlTowerController;
 
 
@@ -193,6 +197,32 @@ public class ControlTowerGUI extends JFrame {
         }
 
         return card;
+    }
+
+    public void log(String message) {
+        log(message, new Color(51, 255, 51)); 
+    }
+    public void log(String message, Color color) {
+        if (message == null || message.isEmpty()) return;
+        SimpleAttributeSet style = new SimpleAttributeSet();
+        StyleConstants.setForeground(style, color);
+        StyleConstants.setFontFamily(style, "Monospaced");
+        StyleConstants.setBold(style, true);
+
+        try {
+            Document doc = logPane.getStyledDocument();
+            String[] lines = message.split("\n");
+        
+            for (String line : lines) {
+                String cleanLine = line.trim();
+                if (cleanLine.length() > 0) {
+                    doc.insertString(doc.getLength(), " > " + cleanLine + "\n", style);
+                }
+            }
+            logPane.setCaretPosition(doc.getLength());
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+        }
     }
 
     public JButton getClearBtn() { return clearBtn; }
