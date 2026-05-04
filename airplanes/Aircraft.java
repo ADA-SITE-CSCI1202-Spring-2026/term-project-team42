@@ -92,4 +92,4 @@ public abstract class Aircraft {
     public abstract Color getThemeColor();
 
     public abstract String toSaveString();
-}
+}    
