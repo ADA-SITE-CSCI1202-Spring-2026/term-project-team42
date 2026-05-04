@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import javax.naming.InsufficientResourcesException;
-import logic.exceptions.InsufficientBudgetException;
+import logic.exceptions.*;
 
 public class DepotManager {
 
@@ -16,9 +16,9 @@ public class DepotManager {
         supplies = new HashMap<>();
         budget = 50000.0;
 
-        supplies.put(SupplyItem.FUEL, 1800);
+        supplies.put(SupplyItem.FUEL, 5000);
         supplies.put(SupplyItem.MEALS, 300);
-        supplies.put(SupplyItem.CARTS, 15);
+        supplies.put(SupplyItem.CARTS, 100);
     }
 
     public int getSupply(SupplyItem item) {
@@ -110,15 +110,22 @@ public class DepotManager {
         budget += amount;
     }
 
-    public void restock(SupplyItem item) throws InsufficientBudgetException{
+    public void restock(SupplyItem item) throws InsufficientBudgetException, StockLimitExceededException{
         if(item == null) {
             throw new IllegalArgumentException("The type of supply item is not provided. Choose an option from the dropdown menu!");
         }
 
-        int amount = item.getDefaultAmount();
+        int amountToAdd = item.getDefaultAmount();
+        int currentStock = getSupply(item);
+
+        if (currentStock + amountToAdd > item.getMaxCapacity()) {
+            throw new StockLimitExceededException("Cannot add " + amountToAdd + " units to " + item.getDisplayName() +
+                                " Current Stock: " + currentStock + "/" + item.getMaxCapacity());
+        }
+
         double cost = item.getDefaultCost();
         spendBudget(cost);
-        supplies.put(item, getSupply(item) + amount);
+        supplies.put(item, getSupply(item) + amountToAdd);
 
     }
 }
