@@ -4,7 +4,7 @@ import airplanes.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import logic.exceptions.InsufficientBudgetException;
+import logic.exceptions.*;
 import logic.managers.*;
 import logic.services.*;
 
@@ -65,21 +65,23 @@ public class FlightOperations {
         return new GroundServiceMessage(groundServiceSummary, currentRequest);
     }
 
-    public String purchaseSupply(String supplyName) throws InsufficientBudgetException {
+    public String purchaseSupply(String supplyName) throws InsufficientBudgetException, StockLimitExceededException {
         SupplyItem supplyToBuy = SupplyItem.fromString(supplyName);
 
         try {
             depotManager.restock(supplyToBuy);
         
-            int amount = supplyToBuy.getDefaultAmount();
+            int amountToAdd = supplyToBuy.getDefaultAmount();
             int cost = supplyToBuy.getDefaultCost();
             String supplyName_name = supplyToBuy.getDisplayName();
-            return ("ORDER FILLED: Received " + amount + " units of " + supplyName_name + ". Cost >> " + cost);
+            return ("ORDER FILLED: Received " + amountToAdd + " units of " + supplyName_name + ". Cost >> " + cost);
         } catch (InsufficientBudgetException e) {
             throw new InsufficientBudgetException("Insufficient budget for " + 
                 supplyToBuy.getDisplayName() + " >> " + e.getMessage());
+        } catch (StockLimitExceededException e){
+            throw new StockLimitExceededException(e.getMessage());
         }
-        
+
     }
 
     public FlightRequest spawnFlight() {
