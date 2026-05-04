@@ -91,15 +91,5 @@ public abstract class Aircraft {
     public abstract String getLogDetails();
     public abstract Color getThemeColor();
 
-<<<<<<< HEAD
-    public int getRequiredMeals() {
-        return 0;
-    }
-    
-    public int getRequiredCarts() {
-        return 0;
-    }
-=======
     public abstract String toSaveString();
->>>>>>> c6c97bdd63e05ca66bd0a50ad90fcd7c87ab7e3c
-}
+}    
