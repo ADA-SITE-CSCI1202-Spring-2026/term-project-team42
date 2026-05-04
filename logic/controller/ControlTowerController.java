@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Random;
 import javax.swing.*;
 import logic.actions.*;
-import logic.exceptions.InsufficientBudgetException;
+import logic.exceptions.*;
 import logic.managers.*;
 import logic.persistence.*;
 import logic.services.*;
@@ -142,6 +142,8 @@ public class ControlTowerController {
             view.log("INPUT ERROR: " + e.getMessage(), Color.RED);
         } catch (InsufficientBudgetException e) {
             view.log("FINANCE ERROR: " + e.getMessage(), Color.RED);
+        } catch (StockLimitExceededException e){
+            view.log("DEPOT ERROR: " + e.getMessage(), Color.RED);
         }
     }   
 }
